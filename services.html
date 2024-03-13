@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bootstrap demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <LINK rel="stylesheet" type="text/css" href="pagecss.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+    integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+   
+    <style>
+     
+
+body {
+  margin: 0;
+  background: #0c0c0c;
+  text-align: center;
+  font-family: sans-serif;
+  color: #fefefe;
+}
+.container {
+  position: relative;
+  width: 320px;
+  margin: 100px auto 0 auto;
+  top: 20px;
+  bottom: auto;
+  perspective: 1000px;
+  z-index: 99;
+}
+
+.carousel {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d; 
+  animation: rotate360 60s infinite forwards linear;
+}
+.carousel__face { 
+  position: absolute;
+  width: 400px;
+  height: 200px;
+  top: 20px;
+  left: 10px;
+  right: 10px;
+  background-size: cover;
+  box-shadow:inset 0 0 0 2000px rgba(0,0,0,0.5);
+  display: flex;
+}
+
+span {
+  margin: auto;
+  font-size: 1rem;
+}
+
+
+.carousel__face:nth-child(1) {
+  background-image: url("services 1.jpg");
+  transform: rotateY(  0deg) translateZ(600px); }
+.carousel__face:nth-child(2) { 
+  background-image: url("services 2.jpg");
+    transform: rotateY( 40deg) translateZ(600px); }
+.carousel__face:nth-child(3) {
+  background-image: url("services 3.jpg");
+  transform: rotateY( 80deg) translateZ(600px); }
+.carousel__face:nth-child(4) {
+  background-image: url("services 4.jpg");
+  transform: rotateY(120deg) translateZ(600px); }
+.carousel__face:nth-child(5) { 
+  background-image: url("wolvagen 3.jpg");
+ transform: rotateY(160deg) translateZ(600px); }
+.carousel__face:nth-child(6) { 
+  background-image: url("mercedes 4.jpg");
+ transform: rotateY(200deg) translateZ(600px); }
+.carousel__face:nth-child(7) { 
+  background-image: url("car1.jpg");
+ transform: rotateY(240deg) translateZ(600px); }
+.carousel__face:nth-child(8) {
+  background-image: url("car2.jpg");
+  transform: rotateY(280deg) translateZ(600px); }
+.carousel__face:nth-child(9) {
+  background-image: url("car3.webp");
+  transform: rotateY(320deg) translateZ(600px); }
+
+
+
+@keyframes rotate360 {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(-360deg);
+  }
+}
+
+section {
+  height: 100vh;
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+.services{
+    background: #0c0c0c;
+}
+
+.services .serv{
+    background: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  z-index: 99;
+}
+.column {
+  width: 100%;
+  padding: 0 1em 1em 1em;
+  text-align: center;
+  z-index: 99;
+}
+.card {
+  width: 100%;
+  height: 100%;
+  padding: 2em 1.5em;
+  background: linear-gradient(#ffffff 50%, #080cf9 50%);
+  background-size: 100% 200%;
+  background-position: 0 2.5%;
+  border-radius: 5px;
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: 0.5s;
+}
+h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #680dfa;
+  margin: 1em 0;
+}
+p {
+  color: #575a7b;
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+}
+.icon-wrapper {
+  background-color: #5010f3;
+  position: relative;
+  margin: auto;
+  font-size: 30px;
+  height: 2.5em;
+  width: 2.5em;
+  color: #ffffff;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: 0.5s;
+}
+.card:hover {
+  background-position: 0 100%;
+}
+.card:hover .icon-wrapper {
+  background-color: #ffffff;
+  color: #08fc41;
+}
+.card:hover h3 {
+  color: #ffffff;
+}
+.card:hover p {
+  color: #f0f0f0;
+}
+@media screen and (min-width: 768px) {
+  section {
+    padding: 0 2em;
+  }
+  .column {
+    flex: 0 50%;
+    max-width: 50%;
+  }
+}
+@media screen and (min-width: 992px) {
+  section {
+    padding: 1em 3em;
+  }
+  .column {
+    flex: 0 0 33.33%;
+    max-width: 33.33%;
+  }
+}
+
+    </style>
+   
+</head>
+
+<body>
+ 
+  <nav class="cc-navbar navbar navbar-expand-lg  position-fixed navbar-dark w-100">
+    <div class="container-fluid">
+      <a class="navbar-brand text-uppercase fw-bolder mx-4 py-3" href="#">SUPER CAR</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item pe-4">
+            <a class="nav-link active" aria-current="page" href="accueil.html">acceuil</a>
+          </li>
+          <li class="nav-item pe-4">
+            <a class="nav-link" href="voiture.html">demande d'essaie</a>
+          </li>
+
+          <li class="nav-item pe-4">
+            <a class="nav-link " href="demande d'essai.html">voiture</a>
+          </li>
+          <li class="nav-item pe-4">
+            <a class="nav-link " href="services.html">services</a>
+          </li>
+          <li class="nav-item pe-4">
+            <a class="btn btn-order rounder-0 " href="contact.html">contact</a>
+          </li>
+          <li class="nav-item pe-4">
+            <a class="btn btn-order  rounder-0 " href="incription.html">login</a>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </nav>
+
+   <!--carousell-->
+  <div class="container" style="color: #2c7bfe;">
+    <div class="row">
+      <div class="carousel">
+        <div class="carousel__face"><span>supercar</span></div>
+        <div class="carousel__face"><span>supercar</span></div>
+        <div class="carousel__face"><span>supercar</span></div>
+        <div class="carousel__face"><span>supercar</span></div>
+        <div class="carousel__face"><span>supercar</span></div>
+        <div class="carousel__face"><span>supercar</span></div>
+        <div class="carousel__face"><span>supercar</span></div>
+        <div class="carousel__face"><span>supercar</span></div>
+        <div class="carousel__face"><span>supercar</span></div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  
+  <!--/caroussel-->
+  <section class="section services">
+    <div class="row">
+      <h2 class="section-heading">Our Services</h2>
+    </div>
+    <div class="row">
+      <div class="column">
+        <div class="card">
+          <div class="icon-wrapper">
+            <i class="fas fa-hammer"></i>
+          </div>
+          <h3>REPARATION</h3>
+          <p>
+            Votre voiture a de la valeurs, n'importe où n'importe quand. un service fiable et véridique.
+          </p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="card">
+          <div class="icon-wrapper">
+            <i class="fas fa-brush"></i>
+          </div>
+          <h3>CAROSSERIE</h3>
+          <p>
+            Augmenter votre visibilité sur la route par la carosserie les vitres.
+          </p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="card">
+          <div class="icon-wrapper">
+            <i class="fas fa-wrench"></i>
+          </div>
+          <h3>CUSTOMISATION</h3>
+          <p>
+            Personaliser votre voiture avec des accessoires hors du commun, et unique.
+          </p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="card">
+          <div class="icon-wrapper">
+            <i class="fas fa-truck-pickup"></i>
+          </div>
+          <h3>ENTRETIEN</h3>
+          <p>
+            L'entretien doit se realise dans le respect des preconisation du carnet d'entretien 
+            fourni par le constructeur.
+          </p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="card">
+          <div class="icon-wrapper">
+            <i class="fas fa-broom"></i>
+          </div>
+          <h3>TEINTURE</h3>
+          <p>
+            Redonnez une nouvelle couleur a votre voiture, a votre vie.
+          </p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="card">
+          <div class="icon-wrapper">
+            <i class="fas fa-plug"></i>
+          </div>
+          <h3>RECHARGE</h3>
+          <p>
+            Faites le plein de batterie et rester sur la route.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+</body>
+
+</html>
