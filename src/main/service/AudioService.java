@@ -1,60 +1,87 @@
 package main.service;
 
+
 import main.model.VoiceMessage;
 import main.util.AudioRecorder;
 import main.util.CryptoUtils;
 import main.util.DatabaseHelper;
-import javax.sound.sampled.LineUnavailableException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service de gestion des enregistrements audio.
+ * Service de gestion des enregistrements audio
  */
 public class AudioService {
     private static final String AUDIO_DIR = "resources/audio/";
     
     /**
-     * Enregistre et sauvegarde un nouveau message vocal.
+     * Enregistre un nouveau message vocal
      * @param messageName Nom du message
      * @return Le message vocal créé
-     * @throws LineUnavailableException Si le matériel audio n'est pas disponible
-     * @throws IOException En cas d'erreur d'écriture du fichier
+     * @throws IOException En cas d'erreur d'écriture
      */
-    public static VoiceMessage recordAndSaveMessage(String messageName) 
-            throws LineUnavailableException, IOException {
+    public static VoiceMessage recordMessage(String messageName) throws IOException {
         if (!AuthService.isAuthenticated()) {
             throw new IllegalStateException("Utilisateur non authentifié");
         }
         
         Files.createDirectories(Paths.get(AUDIO_DIR));
         
+        // Générer un nom de fichier unique
         String timestamp = String.valueOf(System.currentTimeMillis());
-        String filename = messageName + "_" + timestamp + ".wav";
+        String filename = sanitizeFilename(messageName) + "_" + timestamp + ".wav";
         String filePath = AUDIO_DIR + filename;
         
-        AudioRecorder recorder = new AudioRecorder(new File(filePath));
-        recorder.start();
+        // Enregistrement (sera géré par RecordDialog)
+        File audioFile = new File(filePath);
         
-        // Simulation d'enregistrement (5 secondes)
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        
-        recorder.stop();
-        
+        // Calculer le hash
         String hash = CryptoUtils.generateFileHash(filePath);
         int userId = AuthService.getCurrentUser().getId();
         
+        // Sauvegarder dans la base de données
         return saveVoiceMessageToDB(userId, filename, filePath, hash, false);
+    }
+    
+    /**
+     * Sauvegarde un fichier audio existant
+     * @param sourceFile Fichier source
+     * @param messageName Nom du message
+     * @return Le message vocal créé
+     * @throws IOException En cas d'erreur de copie
+     */
+    public static VoiceMessage saveAudioFile(File sourceFile, String messageName) throws IOException {
+        if (!AuthService.isAuthenticated()) {
+            throw new IllegalStateException("Utilisateur non authentifié");
+        }
+        
+        Files.createDirectories(Paths.get(AUDIO_DIR));
+        
+        // Générer un nom de fichier unique
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String filename = sanitizeFilename(messageName) + "_" + timestamp + ".wav";
+        String filePath = AUDIO_DIR + filename;
+        
+        // Copier le fichier dans le dossier de l'application
+        Files.copy(sourceFile.toPath(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+        
+        // Calculer le hash
+        String hash = CryptoUtils.generateFileHash(filePath);
+        int userId = AuthService.getCurrentUser().getId();
+        
+        // Sauvegarder dans la base de données
+        return saveVoiceMessageToDB(userId, filename, filePath, hash, false);
+    }
+    
+    private static String sanitizeFilename(String name) {
+        return name.replaceAll("[^a-zA-Z0-9.-]", "_");
     }
     
     private static VoiceMessage saveVoiceMessageToDB(int userId, String filename, 

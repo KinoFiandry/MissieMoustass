@@ -3,62 +3,72 @@ package main.util;
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
- * Classe utilitaire pour l'enregistrement audio.
+ * Classe pour l'enregistrement audio au format WAV
  */
 public class AudioRecorder {
     private static final AudioFileFormat.Type FILE_TYPE = AudioFileFormat.Type.WAVE;
     private final AudioFormat format;
-    private final File audioFile;
-    private TargetDataLine dataLine;
+    private TargetDataLine microphone;
     private boolean isRecording = false;
+    private File audioFile;
     
     /**
-     * Constructeur de l'enregistreur audio.
-     * @param audioFile Fichier de destination
+     * Initialise l'enregistreur avec le format audio par défaut
      */
-    public AudioRecorder(File audioFile) {
-        this.audioFile = audioFile;
+    public AudioRecorder() {
         this.format = getAudioFormat();
     }
     
     /**
-     * Démarre l'enregistrement audio.
+     * Démarre l'enregistrement audio
+     * @return Le fichier audio créé
      * @throws LineUnavailableException Si le matériel audio n'est pas disponible
      */
-    public void start() throws LineUnavailableException {
-        if (isRecording) return;
-        
-        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-        if (!AudioSystem.isLineSupported(info)) {
-            throw new LineUnavailableException("Line not supported");
+    public File startRecording() throws LineUnavailableException {
+        if (isRecording) {
+            throw new IllegalStateException("L'enregistrement est déjà en cours");
         }
         
-        dataLine = (TargetDataLine) AudioSystem.getLine(info);
-        dataLine.open(format);
-        dataLine.start();
+        // Créer un nom de fichier unique avec timestamp
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String filename = "recording_" + timestamp + ".wav";
+        this.audioFile = new File("resources/audio/" + filename);
+        
+        // Créer le répertoire s'il n'existe pas
+        audioFile.getParentFile().mkdirs();
+        
+        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+        microphone = (TargetDataLine) AudioSystem.getLine(info);
+        microphone.open(format);
+        microphone.start();
         
         isRecording = true;
         
+        // Démarrer un nouveau thread pour l'enregistrement
         new Thread(() -> {
-            try (AudioInputStream ais = new AudioInputStream(dataLine)) {
+            try (AudioInputStream ais = new AudioInputStream(microphone)) {
                 AudioSystem.write(ais, FILE_TYPE, audioFile);
             } catch (IOException e) {
-                System.err.println("Error during recording: " + e.getMessage());
+                System.err.println("Erreur lors de l'enregistrement: " + e.getMessage());
             }
         }).start();
+        
+        return audioFile;
     }
     
     /**
-     * Arrête l'enregistrement audio.
+     * Arrête l'enregistrement audio
      */
-    public void stop() {
+    public void stopRecording() {
         if (!isRecording) return;
         
         isRecording = false;
-        dataLine.stop();
-        dataLine.close();
+        microphone.stop();
+        microphone.close();
     }
     
     /**
@@ -69,8 +79,15 @@ public class AudioRecorder {
     }
     
     /**
-     * Configure le format audio par défaut.
-     * @return Le format audio configuré
+     * @return Le fichier audio en cours d'enregistrement
+     */
+    public File getAudioFile() {
+        return audioFile;
+    }
+    
+    /**
+     * Configure le format audio
+     * @return Format audio configuré
      */
     private AudioFormat getAudioFormat() {
         float sampleRate = 44100; // 44.1 kHz
