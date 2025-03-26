@@ -1,47 +1,54 @@
-name: SonarQube
+name: SonarQube Analysis for MissieMoustass
+
 on:
   push:
     branches:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   build:
-    name: Build and analyze
-    runs-on: windows-latest
+    name: Build and analyze MissieMoustass
+    runs-on: ubuntu-latest  # Utilisation d'Ubuntu pour compatibilité Java
+
     steps:
-      - name: Set up JDK 17
+      - name: Checkout du code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Désactiver les clones peu profonds pour SonarCloud
+
+      - name: Configuration de Java 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Cache SonarQube Cloud packages
-        uses: actions/cache@v4
-        with:
-          path: ~\sonar\cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache SonarQube Cloud scanner
-        id: cache-sonar-scanner
-        uses: actions/cache@v4
-        with:
-          path: .\.sonar\scanner
-          key: ${{ runner.os }}-sonar-scanner
-          restore-keys: ${{ runner.os }}-sonar-scanner
-      - name: Install SonarQube Cloud scanner
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        shell: powershell
+          distribution: 'zulu'  # OpenJDK via Azul (recommandé)
+
+      - name: Vérification de Java
+        run: java -version
+
+      - name: Compilation du projet Java (Sans Maven)
         run: |
-          New-Item -Path .\.sonar\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-      - name: Build and analyze
+          mkdir -p bin
+          javac -d bin $(find src -name "*.java")
+
+      - name: Installation de SonarScanner
+        run: |
+          sudo apt update
+          sudo apt install -y unzip
+          curl -o sonarqube.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-5.0.1.3006-linux.zip
+          unzip sonarqube.zip
+          mv sonar-scanner-5.0.1.3006-linux sonar-scanner
+          echo "$PWD/sonar-scanner/bin" >> $GITHUB_PATH
+
+      - name: Analyse SonarQube
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"tkl-dav_test" /o:"tkl-dav" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          sonar-scanner \
+            -Dsonar.projectKey=MissieMoustass \
+            -Dsonar.organization=ton-organisation-sonarcloud \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.sources=src \
+            -Dsonar.java.binaries=bin
