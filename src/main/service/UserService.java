@@ -16,10 +16,13 @@ public class UserService {
      * Crée un nouvel utilisateur.
      * @param username Nom d'utilisateur
      * @param password Mot de passe
+     * @param prenom 
+     * @param nom 
+     * @param email 
      * @param isAdmin Si l'utilisateur est administrateur
      * @return Vrai si la création a réussi
      */
-    public static boolean createUser(String username, String password, boolean isAdmin) {
+    public static boolean createUser(String username, String password, String email, String nom, String prenom, boolean isAdmin) {
         if (usernameExists(username)) {
             return false;
         }
@@ -65,7 +68,7 @@ public class UserService {
                     rs.getString("username"),
                     rs.getString("password"),
                     rs.getString("salt"),
-                    rs.getBoolean("is_admin")
+                    sql, sql, sql, rs.getBoolean("is_admin")
                 );
             }
         } catch (SQLException e) {
@@ -92,7 +95,7 @@ public class UserService {
                     rs.getString("username"),
                     rs.getString("password"),
                     rs.getString("salt"),
-                    rs.getBoolean("is_admin")
+                    sql, sql, sql, rs.getBoolean("is_admin")
                 ));
             }
         } catch (SQLException e) {
@@ -109,10 +112,12 @@ public class UserService {
      * @param isAdmin Nouveau statut admin (null pour ne pas changer)
      * @return Vrai si la mise à jour a réussi
      */
-    public static boolean updateUser(int id, String newUsername, String newPassword, Boolean isAdmin) {
+    public static boolean updateUser(int id, String newUsername, String newPassword, 
+            String newEmail, String newNom, String newPrenom,
+            Boolean isAdmin) {
         User user = getUserById(id);
         if (user == null) return false;
-        
+
         try {
             String sql = "UPDATE users SET username = ?, password = ?, is_admin = ? WHERE id = ?";
             
@@ -128,8 +133,11 @@ public class UserService {
                     pstmt.setString(2, user.getPasswordHash());
                 }
                 
-                pstmt.setBoolean(3, isAdmin != null ? isAdmin : user.isAdmin());
-                pstmt.setInt(4, id);
+                pstmt.setString(3, newEmail != null ? newEmail : user.getEmail());
+                pstmt.setString(4, newNom != null ? newNom : user.getNom());
+                pstmt.setString(5, newPrenom != null ? newPrenom : user.getPrenom());
+                pstmt.setBoolean(6, isAdmin != null ? isAdmin : user.isAdmin());
+                pstmt.setInt(7, id);
                 
                 return pstmt.executeUpdate() > 0;
             }

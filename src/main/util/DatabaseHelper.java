@@ -34,6 +34,7 @@ public class DatabaseHelper {
      * @throws RuntimeException Si l'initialisation échoue
      */
     public static void initializeDB() {
+    	
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             
@@ -47,11 +48,14 @@ public class DatabaseHelper {
     
     private static void createUserTable(Statement stmt) throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS users (" +
-                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                     "username TEXT NOT NULL UNIQUE," +
-                     "password TEXT NOT NULL," +
-                     "salt TEXT NOT NULL," +
-                     "is_admin BOOLEAN NOT NULL DEFAULT 0)";
+        		"id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "username TEXT NOT NULL UNIQUE," +
+                "password TEXT NOT NULL," +
+                "salt TEXT NOT NULL," +
+                "email TEXT NOT NULL UNIQUE," +
+                "nom TEXT NOT NULL," +
+                "prenom TEXT NOT NULL," +
+                "is_admin BOOLEAN NOT NULL DEFAULT 0)";
         stmt.execute(sql);
     }
     

@@ -10,6 +10,9 @@ public class User {
     private final String username;
     private final String passwordHash;
     private final String salt;
+    private final String email;
+    private final String nom;
+    private final String prenom;
     private final boolean isAdmin;
     
     /**
@@ -20,13 +23,17 @@ public class User {
      * @param salt Sel utilisé pour le hachage
      * @param isAdmin Si l'utilisateur est administrateur
      */
-    public User(int id, String username, String passwordHash, String salt, boolean isAdmin) {
-        this.id = id;
-        this.username = username;
-        this.passwordHash = passwordHash;
-        this.salt = salt;
-        this.isAdmin = isAdmin;
-    }
+    public User(int id, String username, String passwordHash, String salt, 
+            String email, String nom, String prenom, boolean isAdmin) {
+     this.id = id;
+     this.username = username;
+     this.passwordHash = passwordHash;
+     this.salt = salt;
+     this.email = email;
+     this.nom = nom;
+     this.prenom = prenom;
+     this.isAdmin = isAdmin;
+ }
     
     // Getters avec documentation Javadoc
     
@@ -40,9 +47,21 @@ public class User {
      */
     public String getUsername() { return username; }
     
+    public String getEmail() {
+        return email;
+    }
+    
+    public String getNom() {
+        return nom;
+    }
+    
+    public String getPrenom() {
+        return prenom;
+    }
     /**
      * @return Le hash du mot de passe
      */
+   
     public String getPasswordHash() { return passwordHash; }
     
     /**
@@ -54,6 +73,7 @@ public class User {
      * @return Vrai si l'utilisateur est administrateur
      */
     public boolean isAdmin() { return isAdmin; }
+    
     
     @Override
     public boolean equals(Object o) {

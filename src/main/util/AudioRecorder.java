@@ -89,7 +89,7 @@ public class AudioRecorder {
      * Configure le format audio
      * @return Format audio configuré
      */
-    private AudioFormat getAudioFormat() {
+    AudioFormat getAudioFormat() {
         float sampleRate = 44100; // 44.1 kHz
         int sampleSizeInBits = 16;
         int channels = 1; // Mono

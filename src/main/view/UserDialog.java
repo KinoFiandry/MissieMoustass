@@ -16,6 +16,9 @@ public class UserDialog extends JDialog {
     private JCheckBox adminCheckBox;
     private boolean userSaved = false;
     private final User existingUser;
+    private JTextField emailField;
+    private JTextField nomField;
+    private JTextField prenomField;
     
     /**
      * Constructeur du dialogue utilisateur.
@@ -41,9 +44,21 @@ public class UserDialog extends JDialog {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
         // Champs de formulaire
+        mainPanel.add(new JLabel("Nom :"));
+        nomField = new JTextField();
+        mainPanel.add(nomField);
+        
+        mainPanel.add(new JLabel("Prenom :"));
+        prenomField = new JTextField();
+        mainPanel.add(prenomField);
+        
         mainPanel.add(new JLabel("Nom d'utilisateur:"));
         usernameField = new JTextField();
         mainPanel.add(usernameField);
+        
+        mainPanel.add(new JLabel("Email :"));
+        emailField = new JTextField();
+        mainPanel.add(emailField);
         
         mainPanel.add(new JLabel("Mot de passe:"));
         passwordField = new JPasswordField();
@@ -62,7 +77,11 @@ public class UserDialog extends JDialog {
             usernameField.setText(existingUser.getUsername());
             adminCheckBox.setSelected(existingUser.isAdmin());
         }
-        
+        if (existingUser != null) {
+            emailField.setText(existingUser.getEmail());
+            nomField.setText(existingUser.getNom());
+            prenomField.setText(existingUser.getPrenom());
+        }
         // Boutons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         
@@ -85,7 +104,10 @@ public class UserDialog extends JDialog {
      * @param e Événement d'action
      */
     private void saveUser(ActionEvent e) {
-        String username = usernameField.getText().trim();
+    	String username = usernameField.getText().trim();
+        String email = emailField.getText().trim();
+        String nom = nomField.getText().trim();
+        String prenom = prenomField.getText().trim();
         String password = new String(passwordField.getPassword());
         String confirmPassword = new String(confirmPasswordField.getPassword());
         boolean isAdmin = adminCheckBox.isSelected();
@@ -122,12 +144,15 @@ public class UserDialog extends JDialog {
         
         boolean success;
         if (existingUser == null) {
-            success = UserService.createUser(username, password, isAdmin);
+            success = UserService.createUser(username, password, email, nom, prenom, isAdmin);
         } else {
             success = UserService.updateUser(
                 existingUser.getId(), 
                 username, 
-                password.isEmpty() ? null : password, 
+                password.isEmpty() ? null : password,
+                email,
+                nom,
+                prenom,
                 isAdmin
             );
         }

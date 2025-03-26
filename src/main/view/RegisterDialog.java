@@ -5,33 +5,26 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-/**
- * Dialogue d'inscription d'un nouvel utilisateur.
- */
 public class RegisterDialog extends JDialog {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
+    private JTextField emailField;
+    private JTextField nomField;
+    private JTextField prenomField;
     private JLabel statusLabel;
     
-    /**
-     * Constructeur du dialogue d'inscription.
-     * @param loginDialog Fenêtre parente
-     */
     public RegisterDialog(LoginDialog loginDialog) {
         super(loginDialog, "Inscription", true);
-        setSize(400, 250);
+        setSize(450, 350); // Augmentation de la taille
         setLocationRelativeTo(loginDialog);
         setLayout(new BorderLayout(10, 10));
         
         initializeComponents();
     }
     
-    /**
-     * Initialise les composants de l'interface.
-     */
     private void initializeComponents() {
-        // Panel principal
+        // Panel principal avec GridBagLayout pour plus de flexibilité
         JPanel mainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -45,30 +38,16 @@ public class RegisterDialog extends JDialog {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
         mainPanel.add(titleLabel, gbc);
         
-        // Champs de formulaire
+        // Réinitialiser gridwidth
         gbc.gridwidth = 1;
-        gbc.gridy++;
-        mainPanel.add(new JLabel("Nom d'utilisateur:"), gbc);
         
-        gbc.gridx = 1;
-        usernameField = new JTextField(15);
-        mainPanel.add(usernameField, gbc);
-        
-        gbc.gridx = 0;
-        gbc.gridy++;
-        mainPanel.add(new JLabel("Mot de passe:"), gbc);
-        
-        gbc.gridx = 1;
-        passwordField = new JPasswordField(15);
-        mainPanel.add(passwordField, gbc);
-        
-        gbc.gridx = 0;
-        gbc.gridy++;
-        mainPanel.add(new JLabel("Confirmer mot de passe:"), gbc);
-        
-        gbc.gridx = 1;
-        confirmPasswordField = new JPasswordField(15);
-        mainPanel.add(confirmPasswordField, gbc);
+        // Champs de formulaire
+        addFormField(mainPanel, gbc, "Nom d'utilisateur:", usernameField = new JTextField(15), 1);
+        addFormField(mainPanel, gbc, "Email:", emailField = new JTextField(15), 2);
+        addFormField(mainPanel, gbc, "Nom:", nomField = new JTextField(15), 3);
+        addFormField(mainPanel, gbc, "Prénom:", prenomField = new JTextField(15), 4);
+        addFormField(mainPanel, gbc, "Mot de passe:", passwordField = new JPasswordField(15), 5);
+        addFormField(mainPanel, gbc, "Confirmer mot de passe:", confirmPasswordField = new JPasswordField(15), 6);
         
         // Barre de statut
         gbc.gridx = 0;
@@ -98,16 +77,25 @@ public class RegisterDialog extends JDialog {
         getRootPane().setDefaultButton(registerButton);
     }
     
-    /**
-     * Tente d'enregistrer un nouvel utilisateur.
-     * @param e Événement d'action
-     */
+    private void addFormField(JPanel panel, GridBagConstraints gbc, String label, JComponent field, int row) {
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        panel.add(new JLabel(label), gbc);
+        
+        gbc.gridx = 1;
+        panel.add(field, gbc);
+    }
+    
     private void performRegistration(ActionEvent e) {
         String username = usernameField.getText().trim();
+        String email = emailField.getText().trim();
+        String nom = nomField.getText().trim();
+        String prenom = prenomField.getText().trim();
         String password = new String(passwordField.getPassword());
         String confirmPassword = new String(confirmPasswordField.getPassword());
         
-        if (username.isEmpty() || password.isEmpty()) {
+        // Validation des champs
+        if (username.isEmpty() || email.isEmpty() || nom.isEmpty() || prenom.isEmpty() || password.isEmpty()) {
             statusLabel.setText("Veuillez remplir tous les champs");
             return;
         }
@@ -122,13 +110,18 @@ public class RegisterDialog extends JDialog {
             return;
         }
         
-        if (AuthService.register(username, password, false)) {
+        if (!email.matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            statusLabel.setText("Veuillez entrer un email valide");
+            return;
+        }
+        
+        if (AuthService.register(username, password, email, nom, prenom, false)) {
             JOptionPane.showMessageDialog(this, 
                 "Inscription réussie! Vous êtes maintenant connecté.", 
                 "Succès", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {
-            statusLabel.setText("Ce nom d'utilisateur est déjà pris");
+            statusLabel.setText("Ce nom d'utilisateur ou email est déjà utilisé");
         }
     }
 }

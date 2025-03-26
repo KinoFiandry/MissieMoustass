@@ -114,7 +114,7 @@ public class UserManagementPanel extends JPanel {
      */
     private static class UserTableModel extends AbstractTableModel {
         private List<User> users;
-        private final String[] columnNames = {"ID", "Nom d'utilisateur", "Admin"};
+        private final String[] columnNames = {"ID", "Nom d'utilisateur", "Email", "Nom", "Prénom", "Admin"};
         
         public UserTableModel() {
             this.users = UserService.getAllUsers();
@@ -156,10 +156,13 @@ public class UserManagementPanel extends JPanel {
         public Object getValueAt(int rowIndex, int columnIndex) {
             User user = users.get(rowIndex);
             switch (columnIndex) {
-                case 0: return user.getId();
-                case 1: return user.getUsername();
-                case 2: return user.isAdmin() ? "Oui" : "Non";
-                default: return null;
+            case 0: return user.getId();
+            case 1: return user.getUsername();
+            case 2: return user.getEmail();
+            case 3: return user.getNom();
+            case 4: return user.getPrenom();
+            case 5: return user.isAdmin() ? "Oui" : "Non";
+            default: return null;
             }
         }
     }

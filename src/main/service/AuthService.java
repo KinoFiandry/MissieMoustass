@@ -37,7 +37,7 @@ public class AuthService {
                         rs.getString("username"),
                         storedHash,
                         salt,
-                        rs.getBoolean("is_admin")
+                        inputHash, inputHash, inputHash, rs.getBoolean("is_admin")
                     );
                     return true;
                 }
@@ -83,7 +83,9 @@ public class AuthService {
      * @param isAdmin Si l'utilisateur est administrateur
      * @return Vrai si l'enregistrement a réussi
      */
-    public static boolean register(String username, String password, boolean isAdmin) {
+    public static boolean register(String username, String password, 
+            String email, String nom, String prenom, 
+            boolean isAdmin) {
         if (usernameExists(username)) {
             return false;
         }
@@ -92,14 +94,17 @@ public class AuthService {
             String salt = CryptoUtils.generateSalt();
             String hashedPassword = CryptoUtils.hashWithSalt(password, salt);
             
-            String sql = "INSERT INTO users(username, password, salt, is_admin) VALUES(?,?,?,?)";
+            String sql = "INSERT INTO users(username, password, salt, email, nom, prenom, is_admin) VALUES(?,?,?,?,?,?,?)";
             
             try (Connection conn = DatabaseHelper.getConnection();
                  PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, username);
-                pstmt.setString(2, hashedPassword);
-                pstmt.setString(3, salt);
-                pstmt.setBoolean(4, isAdmin);
+            	 pstmt.setString(1, username);
+                 pstmt.setString(2, hashedPassword);
+                 pstmt.setString(3, salt);
+                 pstmt.setString(4, email);
+                 pstmt.setString(5, nom);
+                 pstmt.setString(6, prenom);
+                 pstmt.setBoolean(7, isAdmin);
                 
                 return pstmt.executeUpdate() > 0;
             }
